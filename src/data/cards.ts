@@ -114,7 +114,8 @@ export const cards: CardData[] = [
     id: 'timeline',
     title: '设计系统主线',
     subtitle: '从飞书到 HyperOS，四年四站',
-    span: { col: 'md:col-span-2', row: 'md:row-span-2' },
+    // 与 tokens 并排：去掉 row-span，避免下半空与右侧空洞
+    span: { col: 'md:col-span-2' },
     nodes: [
       { year: '2020', org: '字节', product: '飞书' },
       { year: '2022', org: '快手', product: 'KID' },
@@ -147,17 +148,10 @@ export const cards: CardData[] = [
     ],
   },
   {
-    id: 'figma-scan',
-    title: 'Figma 插件扫描',
-    subtitle: '扫过画布，标出 Token 绑定状态',
-    span: { col: 'md:col-span-1', row: 'md:row-span-2' },
-    boundLabel: '已绑定',
-    unboundLabel: '未绑定',
-  },
-  {
     id: 'design-to-code',
     title: '设计稿转代码',
     subtitle: '矢量示意 → 逐行落地',
+    // 先占两列，与 figma / lucky 凑满一行，避免旧版 row-span 造成空洞
     span: { col: 'md:col-span-2' },
     codeLines: [
       '<Button tone="accent">',
@@ -168,6 +162,14 @@ export const cards: CardData[] = [
       'radius: token.radius.md',
       'pad: token.space.3',
     ],
+  },
+  {
+    id: 'figma-scan',
+    title: 'Figma 插件扫描',
+    subtitle: '扫过画布，标出 Token 绑定状态',
+    span: { col: 'md:col-span-1' },
+    boundLabel: '已绑定',
+    unboundLabel: '未绑定',
   },
   {
     id: 'lucky',
