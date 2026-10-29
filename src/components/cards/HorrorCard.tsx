@@ -5,56 +5,113 @@ import type { HorrorCardData } from '../../data/cards'
 import { useCardMotion } from '../../hooks/useCardMotion'
 import { BentoCard } from '../BentoCard'
 
-export function HorrorCard({ data }: { data: HorrorCardData }) {
-  const { ref, reduce, active } = useCardMotion(0.4)
+export function HorrorCard({ data, delay = 0 }: { data: HorrorCardData; delay?: number }) {
+  const { ref, reduce, active } = useCardMotion(0.35)
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
     if (!active || reduce) return
     const id = window.setInterval(() => {
       setIndex((prev) => (prev + 1) % data.films.length)
-    }, 2200)
+    }, 2400)
     return () => window.clearInterval(id)
   }, [active, reduce, data.films.length])
 
   const film = data.films[index] ?? data.films[0]
+  const backLeft = data.films[(index + 1) % data.films.length]
+  const backRight = data.films[(index + 2) % data.films.length]
 
   return (
-    <BentoCard title={data.title} subtitle={data.subtitle} className={data.span.col}>
-      <div ref={ref} className="flex flex-1 flex-col items-center justify-center">
-        <div className="relative w-full max-w-[11rem]">
+    <BentoCard title={data.title} subtitle={data.subtitle} className={data.span.col} delay={delay}>
+      <div ref={ref} className="flex flex-1 flex-col">
+        <div className="relative mx-auto flex w-full max-w-[13rem] flex-1 items-center justify-center">
+          {/* 胶片边条 */}
           <div
-            className="absolute top-0 bottom-0 -left-2 w-3 rounded-sm bg-[#1a1a1a]"
+            className="absolute inset-y-2 left-0 z-0 w-5 rounded-sm border border-white/8 bg-[#101010] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
             style={{
               backgroundImage:
-                'repeating-linear-gradient(180deg, #2a2a2a 0 6px, #111 6px 10px)',
+                'repeating-linear-gradient(180deg, #333 0 3px, #0c0c0c 3px 7px, #1c1c1c 7px 13px)',
             }}
             aria-hidden
           />
-          <div className="relative ml-2 aspect-3/4 overflow-hidden rounded-lg border border-line bg-ink-soft shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(224,122,106,0.18),transparent_55%)]" />
+          <div
+            className="absolute inset-y-2 right-0 z-0 w-5 rounded-sm border border-white/8 bg-[#101010]"
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(180deg, #333 0 3px, #0c0c0c 3px 7px, #1c1c1c 7px 13px)',
+            }}
+            aria-hidden
+          />
+
+          {/* 底层叠海报 — 静态层次 */}
+          <div
+            className="absolute top-[12%] bottom-[14%] left-[18%] right-[22%] z-[1] rounded-md border border-white/10 bg-[#1a1216]"
+            style={{
+              transform: 'rotate(-9deg) translate(-6px, 4px)',
+              boxShadow: '0 10px 28px rgba(0,0,0,0.45)',
+            }}
+            aria-hidden
+          >
+            <div className="flex h-full flex-col items-center justify-center bg-[radial-gradient(circle_at_40%_20%,rgba(224,122,106,0.2),transparent_60%)] p-2 text-center">
+              <p className="font-display text-xs font-bold text-paper/65">{backLeft.title}</p>
+              <p className="mt-1 text-[10px] text-mist/60">{backLeft.year}</p>
+            </div>
+          </div>
+          <div
+            className="absolute top-[14%] bottom-[12%] left-[22%] right-[16%] z-[2] rounded-md border border-white/10 bg-[#161018]"
+            style={{
+              transform: 'rotate(8deg) translate(8px, 6px)',
+              boxShadow: '0 10px 28px rgba(0,0,0,0.45)',
+            }}
+            aria-hidden
+          >
+            <div className="flex h-full flex-col items-center justify-center bg-[radial-gradient(circle_at_60%_30%,rgba(224,122,106,0.15),transparent_55%)] p-2 text-center">
+              <p className="font-display text-xs font-bold text-paper/70">{backRight.title}</p>
+              <p className="mt-1 text-[10px] text-mist/60">{backRight.year}</p>
+            </div>
+          </div>
+
+          {/* 前景主海报 */}
+          <div className="relative z-10 mx-auto aspect-3/4 w-[68%] overflow-hidden rounded-lg border border-white/12 bg-ink-soft shadow-[0_18px_48px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.08)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_16%,rgba(224,122,106,0.32),transparent_52%)]" />
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[0.1]"
+              style={{
+                backgroundImage:
+                  'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.45) 2px, rgba(0,0,0,0.45) 3px)',
+              }}
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-linear-to-b from-white/8 to-transparent"
+              aria-hidden
+            />
             <AnimatePresence mode="wait">
               <m.div
                 key={film.title}
-                className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center"
+                className="absolute inset-0 flex flex-col items-center justify-center p-3.5 text-center"
                 initial={reduce ? false : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={reduce ? undefined : { opacity: 0, y: -12 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span className="text-[10px] tracking-[0.2em] text-warn uppercase">Feature</span>
-                <p className="font-display mt-2 text-xl font-bold text-paper">{film.title}</p>
-                <p className="mt-1 text-sm text-mist">{film.year}</p>
+                <span className="label-track text-[9px] text-warn uppercase">Feature</span>
+                <p className="font-display mt-2 text-lg font-bold text-paper sm:text-xl">
+                  {film.title}
+                </p>
+                <p className="mt-1.5 text-sm tracking-wide text-mist">{film.year}</p>
+                <span className="mt-3 h-px w-8 bg-warn/55" aria-hidden />
               </m.div>
             </AnimatePresence>
           </div>
         </div>
-        <div className="mt-3 flex gap-1.5">
+
+        <div className="mt-2 flex justify-center gap-1.5 pb-0.5">
           {data.films.map((f, i) => (
             <span
               key={f.title}
-              className={`h-1 w-4 rounded-full transition-colors ${
-                i === index ? 'bg-warn' : 'bg-line'
+              className={`h-1 rounded-full transition-all duration-300 ${
+                i === index ? 'w-5 bg-warn shadow-[0_0_8px_rgba(224,122,106,0.45)]' : 'w-3 bg-line'
               }`}
             />
           ))}
